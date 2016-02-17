@@ -1,36 +1,68 @@
 from turtle import *
+import turtle
 import random
+import subprocess
+ 
+cmd = ['xrandr']
+cmd2 = ['grep', '*']
+p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+p2 = subprocess.Popen(cmd2, stdin=p.stdout, stdout=subprocess.PIPE)
+p.stdout.close()
+ 
+resolution_string, junk = p2.communicate()
+resolution = resolution_string.split()[0]
+width, height = resolution.split('x')
+
+width, height = int(width), int(height)
+
+# doritos.gif -> 160 x 231
+# mountain_dew.gif -> 162 x 300
+ 
+doritos_size = [160, 231]
+mountain_dew_size = [162, 300]
 
 tracer(0)
+screen = Screen()
+
 canvas=getcanvas() # the canvas is the area that the turtle is moving (the white background)
 SCREEN_WIDTH = canvas.winfo_width()/2 # here we get canvas(screen) width
 SCREEN_HEIGHT = canvas.winfo_height()/2 # here we get the canvas(screen) height
 
 brick_width = 4
 brick_height = 2
-bricks = []
-colors = ['red','green','blue', 'black', 'purple']
+
+doritos = "Images/doritos.gif"
+mountain_dew = "Images/mountain_dew.gif"
+
+turtle.addshape(doritos)
+turtle.addshape(mountain_dew)
+
+ht()
+
+setup(width, height)
+
+class Doritos():
+	def __init__(self, x, y, hp):
+		self.brick = Brick(x, y, doritos_size[0] , doritos_size[1], doritos)
+		self.width = doritos[0]
+		self.height = doritos[1]
+
+class MountainDew():
+	def __init__(self, x, y ,hp):
+		self.brick = Brick(x, y, mountain_dew_size[0] , mountain_dew_size[1], mountain_dew)
+		self.width = mountain_dew_size[0]
+		self.height = mountain_dew_size[1]
 
 class Brick(Turtle):
-	def __init__(self, x, y, width, height, color):
+	def __init__(self, x, y, width, height, shape):
 		Turtle.__init__(self)
-		self.shape("square")
+		self.shape(shape)
 		self.resizemode('noresize')
-		self.shapesize(height,width)
 		self.showturtle()
-		self.color(color)
 		self.penup()
 		self.goto(x,y)
-		self.width = width*20
-		self.height = height*20
-		self.goto(x-self.width/2,y+self.height/2)
-		self.pd()
-		self.goto(self.xcor()+self.width,self.ycor())
-		self.goto(self.xcor(),self.ycor()-self.height)
-		self.goto(self.xcor()-self.width,self.ycor())
-		self.goto(x-self.width/2,y+self.height/2)
-		self.penup()
-		self.goto(x,y)
+		self.width = width
+		self.height = height
 		# self.hideturtle()
 
 
@@ -55,11 +87,9 @@ class Ball(Turtle):
 		self.goto(x,y)
 		self.radius = radius * 10
 		self.color(color)
-		self.dx = dx
-		self.dy = dy
+		self.dx = dx / 1.3
+		self.dy = dy / 1.3
 		self.penup()
-		#self.getscreen().addshape('paddle.gif')
-		#self.shape("paddle.gif")
 		self.shape("circle")
 		self.shapesize(radius,radius,2)
 	
